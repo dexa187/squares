@@ -1,0 +1,97 @@
+
+<dom-module id="square-element">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      div.box {
+        background-color: white;
+        height: 60px;
+        width: 60px;
+        border-radius: 25px;
+        background: lightsteelblue;
+        padding: 10px;
+        text-align: center;
+        margin: 0px;
+        font-size: 10px;
+      }
+      .button {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 10px;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.button:hover {
+    background-color: blue; /* Green */
+    color: white;
+}
+    </style>
+<div class="box">
+  <span>Bets [[num_bets]]</span><br>
+  <span>[[total]] eth</span><br>
+  <button class="button" on-click="place_bet">Bet</button>
+</div>
+</template>
+
+<script>
+  /**
+   * `square-element`
+   * Its a square
+   *
+   * @customElement
+   * @polymer
+   * @demo demo/index.html
+   */
+  class SquareElement extends Polymer.Element {
+    static get is() { return 'square-element'; }
+    static get properties() {
+      return {
+        row_num:{
+          type: Number
+        },
+        col_num:{
+          type: Number
+        },
+        num_bets: {
+          type: Number,
+          value: 0
+        },
+        total: {
+          type: Number,
+          value: 0
+        },
+        contract: {
+          type: Object
+        }
+      };
+    }
+    ready() {
+      super.ready();
+      var setValues = (function(error, result){
+        this.num_bets = result[0].toNumber();
+        this.total = web3.fromWei(result[1].toNumber(), "ether");        
+      }).bind(this);
+      this.contract.getSquare(this.row_num,this.col_num,setValues);
+    }
+    place_bet() {
+      var betResult = (function(error, result){
+        alert(result)
+      }).bind(this);
+      this.contract.PlaceBet(this.row_num,this.col_num,{from:web3.eth.coinbase,to:this.contract.address, value:web3.toWei(0.001, "ether")},betResult);
+    }
+  }
+
+  window.customElements.define(SquareElement.is, SquareElement);
+</script>
+</dom-module>
