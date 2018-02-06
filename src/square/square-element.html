@@ -83,6 +83,13 @@
         this.total = web3.fromWei(result[1].toNumber(), "ether");        
       }).bind(this);
       this.contract.getSquare(this.row_num,this.col_num,setValues);
+      var updateValues = (function(error, result){
+        if (result.returnValues.squareX == this.row_num && result.retuenValues.squareY == this.col_num){
+          this.num_bets = result.returnValues.num_bets;
+          this.total = result.returnValues.total_bet;
+        }
+      }).bind(this);
+      this.contract.NewBet(updateValues);
     }
     place_bet() {
       var betResult = (function(error, result){
